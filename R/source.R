@@ -63,7 +63,6 @@ getDendro <- function(cluster, leafNames, values=NA){
         isRow <- TRUE
     }
     for(i in 1:nrow(cluster[['merge']])){
-        cat("i>> ");cat(i); cat(", ")
         nodeName <- getName(i, leafNames)
         nodes[[nodeName]] <- list("left_child"=getName(cluster[['merge']][i, 1], leafNames),
                                   "right_child"=getName(cluster[['merge']][i, 2], leafNames),
@@ -73,10 +72,6 @@ getDendro <- function(cluster, leafNames, values=NA){
         if(length(parent <- getParent(i, cluster))) 
             nodes[[nodeName]][["parent"]] <- getName(parent)
         for(j in 1:2){
-            cat("j>> ");cat(j);cat("\n")
-            id <- cluster[['merge']][i, j]
-            cat("id>> ");cat(id); cat("\n")
-            print(cluster[['merge']][i, ])
             if( id < 0 ){
                 leaf <- getName(id, leafNames)
                 nodes[[leaf]] <- list(
