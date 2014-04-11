@@ -114,11 +114,16 @@ getMetadata <- function(meta){
 #' library(rjson)
 #' writeLines(toJSON(inch), "heatmap.json")
 InCHlib <- function(hclustRow, hclustCol, valDf, metaDf=NA){
+	# reorder cols
+	valDf <- valDf[, hclustCol[['order']]]
     inch <- list('data'=list('nodes'=getDendro(hclustRow, rownames(valDf), valDf), 'feature_names'=colnames(valDf)),
                 'column_dendrogram'=list('nodes'=getDendro(hclustCol, colnames(valDf))))
+	# reorder columns dendrogram
+	inch[['column_dendrogram']] <- inch[['column_dendrogram']][c(colnames(valDf), grep("nodes@", names(inch[['column_dendrogram']])))]
     if(is.data.frame(metaDf)){
         inch[['metadata']]=list("nodes"=getMetadata(metaDf), 'feature_names'=colnames(metaDf))
     }
+	class(inch) <- "InCHlib"
     return(inch)
 }
 
