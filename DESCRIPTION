@@ -1,0 +1,9 @@
+Package: InCHlibUtils
+Title: Utilities to use the JavaScript project InCHlib 
+Description: 
+Version: 0.1
+Authors: Matheus C. Burger (matheus.cburger@gmail.com) 
+Depends: R (>= 3.0.2)
+Imports: rjson
+License: GPL-2
+LazyData: true
