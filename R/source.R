@@ -1,4 +1,3 @@
-library(rjson)
 
 #' Get the parent node of i
 #'
@@ -6,8 +5,8 @@ library(rjson)
 #' @param cluster a hclust object
 #'
 #' @examples
-#' hc <- hclust(dist(USArrests), "ave")
-#' getParent(-15, hc)   # 1
+#' #hc <- hclust(dist(USArrests), "ave")
+#' #getParent(-15, hc)   # 1
 getParent <- function(i, cluster){
     return(unname(which(cluster[['merge']] == i, arr.ind=TRUE)[, 1]))
 }
@@ -18,9 +17,9 @@ getParent <- function(i, cluster){
 #' @param cluster a hclust object
 #'
 #' @examples
-#' hc <- hclust(dist(USArrests), "ave")
-#' getCount(-15, hc)    # 1
-#' getCount(40, hc)     # 9
+#' #hc <- hclust(dist(USArrests), "ave")
+#' #getCount(-15, hc)    # 1
+#' #getCount(40, hc)     # 9
 getCount <- function(i, cluster){
     count <- 0
     if( i < 0 ){
@@ -44,10 +43,10 @@ getCount <- function(i, cluster){
 #' @param values    a data.frame containing the data values (if row dendrogram)
 #'
 #' @examples
-#' hc <- hclust(dist(USArrests), "ave")
-#' hc.col <- hclust(dist(t(USArrests)), "ave")
-#' getDendro(hc, rownames(USArrests), USArrests)
-#' getDendro(hc.col, colnames(USArrests))
+#' #hc <- hclust(dist(USArrests), "ave")
+#' #hc.col <- hclust(dist(t(USArrests)), "ave")
+#' #getDendro(hc, rownames(USArrests), USArrests)
+#' #getDendro(hc.col, colnames(USArrests))
 getDendro <- function(cluster, leafNames, values=NA){
     getName <- function(id, leafNames){
         if(length(id) == 1 && id < 0){
@@ -72,6 +71,7 @@ getDendro <- function(cluster, leafNames, values=NA){
         if(length(parent <- getParent(i, cluster))) 
             nodes[[nodeName]][["parent"]] <- getName(parent)
         for(j in 1:2){
+			id <- cluster[['merge']][i, j]
             if( id < 0 ){
                 leaf <- getName(id, leafNames)
                 nodes[[leaf]] <- list(
@@ -98,12 +98,12 @@ getMetadata <- function(meta){
     return(lapply(apply(meta, 1, function(x) list(unname(x))), '[[', 1))
 }
 
-#' Create a InCHlib heatmap
+#' Create an InCHlib heatmap
 #'
-#' @param hclust.row   a hclust object
-#' @param hclust.col   a hclust object
-#' @param val.df       a data.frame containing the data values
-#' @param meta.df      a data.frame containing the metadata
+#' @param hclustRow   a hclust object
+#' @param hclustCol   a hclust object
+#' @param valDf       a data.frame containing the data values
+#' @param metaDf      a data.frame containing the metadata
 #'
 #' @export
 #'
@@ -111,12 +111,13 @@ getMetadata <- function(meta){
 #' hc <- hclust(dist(USArrests), "ave")
 #' hc.col <- hclust(dist(t(USArrests)), "ave")
 #' inch <- InCHlib(hc, hc.col, USArrests)
+#' library(rjson)
 #' writeLines(toJSON(inch), "heatmap.json")
-InCHlib <- function(hclust.row, hclust.col, val.df, meta.df=NA){
-    inch <- list('data'=list('nodes'=getDendro(hclust.row, rownames(val.df), val.df), 'feature_names'=colnames(val.df)),
-                'column_dendrogram'=list('nodes'=getDendro(hclust.col, colnames(val.df))))
-    if(is.data.frame(meta.df)){
-        inch[['metadata']]=list("nodes"=getMetadata(meta.df), 'feature_names'=colnames(meta.df))
+InCHlib <- function(hclustRow, hclustCol, valDf, metaDf=NA){
+    inch <- list('data'=list('nodes'=getDendro(hclustRow, rownames(valDf), valDf), 'feature_names'=colnames(valDf)),
+                'column_dendrogram'=list('nodes'=getDendro(hclustCol, colnames(valDf))))
+    if(is.data.frame(metaDf)){
+        inch[['metadata']]=list("nodes"=getMetadata(metaDf), 'feature_names'=colnames(metaDf))
     }
     return(inch)
 }
